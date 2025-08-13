@@ -1,20 +1,17 @@
 pipeline {
     agent {
-        label 'python-agent'
+        docker {
+            image 'python:3.11'
+            label 'docker-agent'
+        }
     }
+
     stages {
-        stage('Check Python') {
+        stage('Run Python') {
             steps {
                 sh 'python --version'
-                sh 'pip --version'
-            }
-        }
-        stage('Install and Run') {
-            steps {
-                sh '''
-                    pip install requests
-                    python -c "import requests; print(requests.__version__)"
-                '''
+                sh 'pip install requests'
+                sh 'python -c "import requests; print(requests.__version__)"'
             }
         }
     }
