@@ -1,30 +1,21 @@
 pipeline {
-  agent { label 'nodejs' }
-
-  stages {
-    stage('Check Node Version') {
-      steps {
-        sh 'node -v'
-        sh 'npm -v'
-      }
+    agent {
+        label 'python-agent'
     }
-
-    stage('Install Dependencies') {
-      steps {
-        sh 'npm install'
-      }
+    stages {
+        stage('Check Python') {
+            steps {
+                sh 'python --version'
+                sh 'pip --version'
+            }
+        }
+        stage('Install and Run') {
+            steps {
+                sh '''
+                    pip install requests
+                    python -c "import requests; print(requests.__version__)"
+                '''
+            }
+        }
     }
-
-    stage('Lint') {
-      steps {
-        sh 'npm run lint || true'
-      }
-    }
-
-    stage('Test') {
-      steps {
-        sh 'npm test || true'
-      }
-    }
-  }
 }
