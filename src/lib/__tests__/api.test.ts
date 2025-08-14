@@ -1,12 +1,8 @@
 import { getPosts, createPost, updatePost, deletePost } from '@/lib/api';
 import { http, HttpResponse } from 'msw';
-import { server } from '../../mocks/server'; // Import the global server instance
+import { server } from '../../mocks/server'; 
 
-type PostInput = {
-  title: string;
-  content: string;
-  published?: boolean;
-};
+
 
 describe('API Client Functions', () => {
   describe('getPosts', () => {

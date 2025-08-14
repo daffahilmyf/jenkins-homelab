@@ -1,16 +1,15 @@
 import { NextResponse } from 'next/server';
 import { postUpdateSchema } from '@/lib/schemas';
 import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/prisma'; 
+import { prisma } from '@/lib/prisma';
 import { ZodError } from 'zod';
 
-interface Params {
-  params: { id: string };
-}
-
 // GET /api/posts/:id
-export async function GET(request: Request, { params }: Params) {
-  const { id } = params;
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
 
   try {
     const post = await prisma.post.findUnique({ where: { id } });
@@ -29,8 +28,11 @@ export async function GET(request: Request, { params }: Params) {
 }
 
 // PUT /api/posts/:id
-export async function PUT(request: Request, { params }: Params) {
-  const { id } = params;
+export async function PUT(
+  request: Request,
+  { params }: { params:  Promise<{ id: string }> }
+) {
+  const { id } = await params;
 
   try {
     const body = await request.json();
@@ -56,8 +58,11 @@ export async function PUT(request: Request, { params }: Params) {
 }
 
 // DELETE /api/posts/:id
-export async function DELETE(request: Request, { params }: Params) {
-  const { id } = params;
+export async function DELETE(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
 
   try {
     await prisma.post.delete({ where: { id } });

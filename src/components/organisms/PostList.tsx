@@ -6,32 +6,32 @@ import PostCard from '@/components/molecules/PostCard';
 import PostForm from '@/components/molecules/PostForm';
 import Button from '@/components/atoms/Button';
 
-import useSWRInfinite from 'swr/infinite'; // Import useSWRInfinite
+import useSWRInfinite from 'swr/infinite';
 
 import { Post, PostsApiResponse } from '@/types';
-import { getPosts, createPost, updatePost, deletePost } from '@/lib/api'; // Import API functions
+import { getPosts, createPost, updatePost, deletePost } from '@/lib/api';
 
-import { AnimatePresence, motion } from 'framer-motion'; // Import AnimatePresence
-import ConfirmationDialog from '@/components/molecules/ConfirmationDialog'; // Import ConfirmationDialog
+import { AnimatePresence, motion } from 'framer-motion';
+import ConfirmationDialog from '@/components/molecules/ConfirmationDialog';
 
 const PostList: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null); // Keep local error for form submissions
+  const [error, setError] = useState<string | null>(null);
 
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false); // State for confirmation dialog
-  const [postToDeleteId, setPostToDeleteId] = useState<string | null>(null); // State to store ID of post to delete
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [postToDeleteId, setPostToDeleteId] = useState<string | null>(null);
 
-  const postsPerPage = 5; // Display 5 posts per load
+  const postsPerPage = 6;
 
   const getKey = (pageIndex: number, previousPageData: PostsApiResponse | null) => {
-    if (previousPageData && !previousPageData.posts.length) return null; // Reached the end
-    return `/api/posts?skip=${pageIndex * postsPerPage}&take=${postsPerPage}`; // SWR key
+    if (previousPageData && !previousPageData.posts.length) return null;
+    return `/api/posts?skip=${pageIndex * postsPerPage}&take=${postsPerPage}`;
   };
 
   const fetcher = async (url: string): Promise<PostsApiResponse> => {
-    const urlObj = new URL(`http://localhost:3000${url}`); // Dummy base URL for URLSearchParams
+    const urlObj = new URL(`http://localhost:3000${url}`);
     const skip = parseInt(urlObj.searchParams.get('skip') || '0');
     const take = parseInt(urlObj.searchParams.get('take') || '10');
     return getPosts(skip, take);
@@ -48,32 +48,30 @@ const PostList: React.FC = () => {
 
   const handleCreateOrUpdatePost = async (formData: { title: string; content?: string; published?: boolean }) => {
     setIsSubmitting(true);
-    setError(null); // Clear previous errors
+    setError(null);
     try {
       if (editingPost) {
         await updatePost(editingPost.id, formData); // Use updatePost from api.ts
         toast.success('Post updated successfully!');
       } else {
-        const newPost = await createPost(formData); // Use createPost from api.ts
+        const newPost = await createPost(formData);
         toast.success('Post created successfully!');
         mutate((currentData) => {
-          if (!currentData) return undefined; // No data yet
+          if (!currentData) return undefined;
           const firstPage = currentData[0];
-          // Add the new post to the beginning of the first page
           const updatedFirstPage = {
             ...firstPage,
             posts: [newPost, ...firstPage.posts],
-            totalPosts: firstPage.totalPosts + 1, // Increment total count
+            totalPosts: firstPage.totalPosts + 1,
           };
           return [updatedFirstPage, ...currentData.slice(1)];
-        }, { revalidate: false }); // Don't revalidate immediately, we've updated the cache
+        }, { revalidate: false });
       }
       setShowForm(false);
       setEditingPost(undefined);
-      // No need to reset currentPage here, SWRInfinite handles it
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
-      
+
     } finally {
       setIsSubmitting(false);
     }
@@ -87,23 +85,21 @@ const PostList: React.FC = () => {
     }
   };
 
-  // Function to open the confirmation dialog
   const handleDelete = (id: string) => {
     setPostToDeleteId(id);
     setIsConfirmDialogOpen(true);
   };
 
-  // Function to confirm and proceed with deletion
   const handleConfirmDelete = async () => {
     if (postToDeleteId) {
-      setError(null); // Clear previous errors
+      setError(null);
       try {
-        await deletePost(postToDeleteId); // Use deletePost from api.ts
-        mutate(); // Revalidate SWR cache
+        await deletePost(postToDeleteId);
+        mutate();
         toast.success('Post deleted successfully!');
       } catch (err: unknown) {
-        setError(`Failed to delete post: ${err instanceof Error ? err.message : 'An unknown error occurred'}`); // Provide more informative error to user
-        
+        setError(`Failed to delete post: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
+
       } finally {
         setIsConfirmDialogOpen(false);
         setPostToDeleteId(null);
@@ -120,8 +116,7 @@ const PostList: React.FC = () => {
   const observerTarget = useRef(null);
 
   useEffect(() => {
-    const currentObserverTarget = observerTarget.current; // Capture current value
-
+    const currentObserverTarget = observerTarget.current;
     if (!currentObserverTarget) return;
 
     const observer = new IntersectionObserver(
@@ -136,7 +131,7 @@ const PostList: React.FC = () => {
     observer.observe(currentObserverTarget);
 
     return () => {
-      if (currentObserverTarget) { // Use captured value in cleanup
+      if (currentObserverTarget) {
         observer.unobserve(currentObserverTarget);
       }
     };

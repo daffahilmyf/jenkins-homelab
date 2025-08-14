@@ -1,40 +1,35 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client'
+import { faker } from '@faker-js/faker'
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function main() {
-  
+  console.log('Seeding database...')
 
-  // Create some initial posts
-  await prisma.post.upsert({
-    where: { id: 'post-1' },
-    update: {},
-    create: {
-      id: 'post-1',
-      title: 'My First Seeded Post',
-      content: `This is the content of my first seeded post. It's great!`,
-      published: true,
-    },
-  });
+  // Generate 10k posts
+  const posts = Array.from({ length: 10_000 }).map(() => ({
+    title: faker.word.words({ count: { min: 3, max: 7 } }) ,
+    content: faker.word.words({ count: { min: 10, max: 20 } }),
+    published: faker.datatype.boolean(),
+  }))
 
-  await prisma.post.upsert({
-    where: { id: 'post-2' },
-    update: {},
-    create: {
-      id: 'post-2',
-      title: 'Another Seeded Post',
-      content: `This post is also very interesting and was added via seeding.`,
-      published: false,
-    },
-  });
+  const batchSize = 1000
+  for (let i = 0; i < posts.length; i += batchSize) {
+    const batch = posts.slice(i, i + batchSize)
+    await prisma.post.createMany({
+      data: batch,
+    })
+    console.log(`Inserted batch ${i / batchSize + 1}`)
+  }
 
-  
+  console.log('Seeding finished ✅')
 }
 
 main()
   .catch((e) => {
-    process.exit(1);
+    console.error(e)
+    process.exit(1)
   })
   .finally(async () => {
-    await prisma.$disconnect();
-  });
+    await prisma.$disconnect()
+  })
