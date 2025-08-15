@@ -1,0 +1,9 @@
+# Ignore artifacts:
+.next
+node_modules
+coverage
+playwright-report
+test-results
+
+# Ignore database files:
+prisma/dev.db

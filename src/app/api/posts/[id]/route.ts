@@ -5,10 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { ZodError } from 'zod';
 
 // GET /api/posts/:id
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   try {
@@ -28,10 +25,7 @@ export async function GET(
 }
 
 // PUT /api/posts/:id
-export async function PUT(
-  request: Request,
-  { params }: { params:  Promise<{ id: string }> }
-) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   try {
@@ -58,10 +52,7 @@ export async function PUT(
 }
 
 // DELETE /api/posts/:id
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   try {

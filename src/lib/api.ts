@@ -10,7 +10,11 @@ interface PostFormData {
 }
 
 // Reusable fetch handler with logging
-async function fetchWithLogging<T>(input: RequestInfo, init: RequestInit | undefined, context: string): Promise<T> {
+async function fetchWithLogging<T>(
+  input: RequestInfo,
+  init: RequestInit | undefined,
+  context: string
+): Promise<T> {
   try {
     const response = await fetch(input, init);
 
@@ -20,9 +24,7 @@ async function fetchWithLogging<T>(input: RequestInfo, init: RequestInit | undef
 
     if (!response.ok) {
       const errorMessage =
-        responseData?.error ||
-        responseData?.errors ||
-        `HTTP error! status: ${response.status}`;
+        responseData?.error || responseData?.errors || `HTTP error! status: ${response.status}`;
       const errorToThrow = new Error(
         typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage)
       );

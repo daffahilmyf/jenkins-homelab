@@ -12,7 +12,9 @@ describe('postCreateSchema', () => {
     const invalidPost = { content: 'Test Content', published: true };
     const result = postCreateSchema.safeParse(invalidPost);
     expect(result.success).toBe(false);
-    expect(result.error?.flatten().fieldErrors.title).toEqual(['Invalid input: expected string, received undefined']);
+    expect(result.error?.flatten().fieldErrors.title).toEqual([
+      'Invalid input: expected string, received undefined',
+    ]);
   });
 
   it('should fail validation if title is empty', () => {
@@ -26,7 +28,9 @@ describe('postCreateSchema', () => {
     const invalidPost = { title: 'Test Title', published: true };
     const result = postCreateSchema.safeParse(invalidPost);
     expect(result.success).toBe(false);
-    expect(result.error?.flatten().fieldErrors.content).toEqual(['Invalid input: expected string, received undefined']);
+    expect(result.error?.flatten().fieldErrors.content).toEqual([
+      'Invalid input: expected string, received undefined',
+    ]);
   });
 
   it('should fail validation if content is empty', () => {
@@ -40,14 +44,22 @@ describe('postCreateSchema', () => {
     const invalidPost = { title: 'Test Title', content: 'Test Content' };
     const result = postCreateSchema.safeParse(invalidPost);
     expect(result.success).toBe(false);
-    expect(result.error?.flatten().fieldErrors.published).toEqual(['Invalid input: expected boolean, received undefined']);
+    expect(result.error?.flatten().fieldErrors.published).toEqual([
+      'Invalid input: expected boolean, received undefined',
+    ]);
   });
 
   it('should fail validation if published is not a boolean', () => {
-    const invalidPost = { title: 'Test Title', content: 'Test Content', published: 'not a boolean' };
+    const invalidPost = {
+      title: 'Test Title',
+      content: 'Test Content',
+      published: 'not a boolean',
+    };
     const result = postCreateSchema.safeParse(invalidPost);
     expect(result.success).toBe(false);
-    expect(result.error?.flatten().fieldErrors.published).toEqual(['Invalid input: expected boolean, received string']);
+    expect(result.error?.flatten().fieldErrors.published).toEqual([
+      'Invalid input: expected boolean, received string',
+    ]);
   });
 });
 

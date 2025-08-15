@@ -36,7 +36,11 @@ describe('Button', () => {
   });
 
   it('should pass through additional props', () => {
-    render(<Button type="submit" disabled>Submit</Button>);
+    render(
+      <Button type="submit" disabled>
+        Submit
+      </Button>
+    );
     const button = screen.getByRole('button', { name: /submit/i });
     expect(button).toBeInTheDocument();
     expect(button).toHaveAttribute('type', 'submit');

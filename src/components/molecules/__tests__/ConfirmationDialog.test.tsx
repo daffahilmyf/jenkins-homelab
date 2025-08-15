@@ -37,7 +37,9 @@ describe('ConfirmationDialog', () => {
 
     expect(screen.getByTestId('confirmation-dialog')).toBeInTheDocument();
     expect(screen.getByTestId('confirmation-dialog-title')).toHaveTextContent('Confirm Action');
-    expect(screen.getByTestId('confirmation-dialog-message')).toHaveTextContent('Are you sure you want to proceed?');
+    expect(screen.getByTestId('confirmation-dialog-message')).toHaveTextContent(
+      'Are you sure you want to proceed?'
+    );
     expect(screen.getByTestId('confirmation-dialog-confirm-button')).toHaveTextContent('Confirm');
     expect(screen.getByTestId('confirmation-dialog-cancel-button')).toHaveTextContent('Cancel');
   });
@@ -84,7 +86,9 @@ describe('ConfirmationDialog', () => {
         cancelText="No, stop!"
       />
     );
-    expect(screen.getByTestId('confirmation-dialog-confirm-button')).toHaveTextContent('Yes, do it!');
+    expect(screen.getByTestId('confirmation-dialog-confirm-button')).toHaveTextContent(
+      'Yes, do it!'
+    );
     expect(screen.getByTestId('confirmation-dialog-cancel-button')).toHaveTextContent('No, stop!');
   });
 });

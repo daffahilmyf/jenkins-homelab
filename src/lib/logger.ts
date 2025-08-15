@@ -7,16 +7,17 @@ const commonPinoConfig = {
   },
 };
 
-const logger = process.env.NODE_ENV === 'development'
-  ? pino({
-      ...commonPinoConfig,
-      transport: {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
+const logger =
+  process.env.NODE_ENV === 'development'
+    ? pino({
+        ...commonPinoConfig,
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+          },
         },
-      },
-    })
-  : pino(commonPinoConfig); // No transport in production or test, defaults to JSON to stdout
+      })
+    : pino(commonPinoConfig); // No transport in production or test, defaults to JSON to stdout
 
 export { logger };

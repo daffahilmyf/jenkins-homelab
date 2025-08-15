@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import toast from 'react-hot-toast';
 import React, { useState, useRef, useEffect } from 'react';
@@ -37,16 +37,23 @@ const PostList: React.FC = () => {
     return getPosts(skip, take);
   };
 
-  const { data, error: swrError, isLoading, mutate, setSize } = useSWRInfinite<PostsApiResponse>(
-    getKey,
-    fetcher
-  );
+  const {
+    data,
+    error: swrError,
+    isLoading,
+    mutate,
+    setSize,
+  } = useSWRInfinite<PostsApiResponse>(getKey, fetcher);
 
   const posts: Post[] = data ? data.flatMap((page) => page.posts) : [];
   const totalPostsCount = data && data[0] ? data[0].totalPosts : 0;
   const hasMore = posts.length < totalPostsCount;
 
-  const handleCreateOrUpdatePost = async (formData: { title: string; content?: string; published?: boolean }) => {
+  const handleCreateOrUpdatePost = async (formData: {
+    title: string;
+    content?: string;
+    published?: boolean;
+  }) => {
     setIsSubmitting(true);
     setError(null);
     try {
@@ -56,22 +63,24 @@ const PostList: React.FC = () => {
       } else {
         const newPost = await createPost(formData);
         toast.success('Post created successfully!');
-        mutate((currentData) => {
-          if (!currentData) return undefined;
-          const firstPage = currentData[0];
-          const updatedFirstPage = {
-            ...firstPage,
-            posts: [newPost, ...firstPage.posts],
-            totalPosts: firstPage.totalPosts + 1,
-          };
-          return [updatedFirstPage, ...currentData.slice(1)];
-        }, { revalidate: false });
+        mutate(
+          (currentData) => {
+            if (!currentData) return undefined;
+            const firstPage = currentData[0];
+            const updatedFirstPage = {
+              ...firstPage,
+              posts: [newPost, ...firstPage.posts],
+              totalPosts: firstPage.totalPosts + 1,
+            };
+            return [updatedFirstPage, ...currentData.slice(1)];
+          },
+          { revalidate: false }
+        );
       }
       setShowForm(false);
       setEditingPost(undefined);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
-
     } finally {
       setIsSubmitting(false);
     }
@@ -98,8 +107,9 @@ const PostList: React.FC = () => {
         mutate();
         toast.success('Post deleted successfully!');
       } catch (err: unknown) {
-        setError(`Failed to delete post: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
-
+        setError(
+          `Failed to delete post: ${err instanceof Error ? err.message : 'An unknown error occurred'}`
+        );
       } finally {
         setIsConfirmDialogOpen(false);
         setPostToDeleteId(null);
@@ -164,14 +174,32 @@ const PostList: React.FC = () => {
   }, [error]);
 
   return (
-    <div data-testid="post-list-container" className="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-sm my-10">
-      <h1 data-testid="post-list-heading" className="text-4xl font-light text-center text-gray-700 mb-12 tracking-wide">Zen Blog Posts</h1>
+    <div
+      data-testid="post-list-container"
+      className="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-sm my-10"
+    >
+      <h1
+        data-testid="post-list-heading"
+        className="text-4xl font-light text-center text-gray-700 mb-12 tracking-wide"
+      >
+        Zen Blog Posts
+      </h1>
 
       <div className="mb-8 flex justify-between items-center">
-        <Button data-testid="create-post-button" onClick={() => { setShowForm(!showForm); setEditingPost(undefined); }}>
+        <Button
+          data-testid={showForm ? 'cancel-button' : 'create-post-button'}
+          onClick={() => {
+            setShowForm(!showForm);
+            setEditingPost(undefined);
+          }}
+        >
           {showForm ? 'Cancel' : 'Create New Post'}
         </Button>
-        {isLoading && <p data-testid="loading-message" className="text-gray-600">Loading...</p>}
+        {isLoading && (
+          <p data-testid="loading-message" className="text-gray-600">
+            Loading...
+          </p>
+        )}
       </div>
 
       <AnimatePresence>
@@ -196,7 +224,9 @@ const PostList: React.FC = () => {
       <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <AnimatePresence>
           {posts.length === 0 && !isLoading ? (
-            <p data-testid="no-posts-message" className="col-span-full text-center text-gray-500">No posts yet. Create one!</p>
+            <p data-testid="no-posts-message" className="col-span-full text-center text-gray-500">
+              No posts yet. Create one!
+            </p>
           ) : (
             posts.map((post) => (
               <PostCard key={post.id} post={post} onEdit={handleEdit} onDelete={handleDelete} />
@@ -205,12 +235,17 @@ const PostList: React.FC = () => {
         </AnimatePresence>
       </motion.div>
 
-      {hasMore && !isLoading && ( // Only show observer target if there's more to load
-        <div ref={observerTarget} className="flex justify-center mt-8">
-          {/* Optional: Add a loading spinner here */}
-          {isLoading && <p data-testid="loading-more-posts-message" className="text-gray-600">Loading more posts...</p>}
-        </div>
-      )}
+      {hasMore &&
+        !isLoading && ( // Only show observer target if there's more to load
+          <div ref={observerTarget} className="flex justify-center mt-8">
+            {/* Optional: Add a loading spinner here */}
+            {isLoading && (
+              <p data-testid="loading-more-posts-message" className="text-gray-600">
+                Loading more posts...
+              </p>
+            )}
+          </div>
+        )}
 
       <AnimatePresence>
         {isConfirmDialogOpen && (

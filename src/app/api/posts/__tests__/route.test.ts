@@ -16,13 +16,15 @@ describe('GET /api/posts', () => {
   });
 
   it('should return a list of posts with default pagination', async () => {
-    const mockPosts = [{
-      id: '1',
-      title: 'Test Post',
-      content: 'Content',
-      createdAt: new Date(),
-      published: true
-    }];
+    const mockPosts = [
+      {
+        id: '1',
+        title: 'Test Post',
+        content: 'Content',
+        createdAt: new Date(),
+        published: true,
+      },
+    ];
     mockPrisma.post.findMany.mockResolvedValue(mockPosts);
     mockPrisma.post.count.mockResolvedValue(1);
 
@@ -44,13 +46,15 @@ describe('GET /api/posts', () => {
   });
 
   it('should return a list of posts with custom skip and take', async () => {
-    const mockPosts = [{
-      id: '2',
-      title: 'Another Post',
-      content: 'More Content',
-      createdAt: new Date(),
-      published: true
-    }];
+    const mockPosts = [
+      {
+        id: '2',
+        title: 'Another Post',
+        content: 'More Content',
+        createdAt: new Date(),
+        published: true,
+      },
+    ];
     mockPrisma.post.findMany.mockResolvedValue(mockPosts);
     mockPrisma.post.count.mockResolvedValue(1);
 

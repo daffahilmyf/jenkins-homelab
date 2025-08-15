@@ -1,20 +1,60 @@
 import { getPosts, createPost, updatePost, deletePost } from '@/lib/api';
 import { http, HttpResponse } from 'msw';
-import { server } from '../../mocks/server'; 
-
-
+import { server } from '../../mocks/server';
 
 describe('API Client Functions', () => {
-  describe('getPosts', () => {
-    const mockPosts = [
-      { id: '1', title: 'Post 1', content: 'Content 1', published: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      { id: '2', title: 'Post 2', content: 'Content 2', published: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      { id: '3', title: 'Post 3', content: 'Content 3', published: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      { id: '4', title: 'Post 4', content: 'Content 4', published: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      { id: '5', title: 'Post 5', content: 'Content 5', published: true, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-      { id: '6', title: 'Post 6', content: 'Content 6', published: false, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() },
-    ];
+  const mockPosts = [
+    {
+      id: '1',
+      title: 'Post 1',
+      content: 'Content 1',
+      published: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: '2',
+      title: 'Post 2',
+      content: 'Content 2',
+      published: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: '3',
+      title: 'Post 3',
+      content: 'Content 3',
+      published: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: '4',
+      title: 'Post 4',
+      content: 'Content 4',
+      published: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: '5',
+      title: 'Post 5',
+      content: 'Content 5',
+      published: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: '6',
+      title: 'Post 6',
+      content: 'Content 6',
+      published: false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ];
 
+  describe('getPosts', () => {
     it('should fetch posts successfully', async () => {
       server.use(
         http.get('/api/posts', ({ request }) => {
@@ -54,6 +94,39 @@ describe('API Client Functions', () => {
       );
       await expect(getPosts(0, 5)).rejects.toThrow('Failed to fetch');
     });
+
+    it('should handle non-JSON response gracefully', async () => {
+      server.use(
+        http.get('/api/posts', () => {
+          return new HttpResponse('Server error', {
+            status: 500,
+            headers: { 'Content-Type': 'text/plain' },
+          });
+        })
+      );
+      await expect(getPosts(0, 5)).rejects.toThrow('HTTP error! status: 500');
+    });
+
+    it('should fallback to status error when no error message in response', async () => {
+      server.use(
+        http.get('/api/posts', () => {
+          return new HttpResponse('{}', {
+            status: 500,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        })
+      );
+      await expect(getPosts(0, 5)).rejects.toThrow('HTTP error! status: 500');
+    });
+
+    it('should handle "errors" field in error response', async () => {
+      server.use(
+        http.get('/api/posts', () => {
+          return HttpResponse.json({ errors: ['Something went wrong'] }, { status: 500 });
+        })
+      );
+      await expect(getPosts(0, 5)).rejects.toThrow('[\"Something went wrong\"]');
+    });
   });
 
   describe('createPost', () => {
@@ -61,7 +134,15 @@ describe('API Client Functions', () => {
       server.use(
         http.post('/api/posts', async ({ request }) => {
           const newPost = await request.json();
-          return HttpResponse.json({ id: 'new-id', ...newPost, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() }, { status: 201 });
+          return HttpResponse.json(
+            {
+              id: 'new-id',
+              ...newPost,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            },
+            { status: 201 }
+          );
         })
       );
       const newPostData = { title: 'New Post', content: 'New Content' };
@@ -86,12 +167,19 @@ describe('API Client Functions', () => {
         http.put('/api/posts/:id', async ({ params, request }) => {
           const { id } = params;
           const updatedData = await request.json();
-          return HttpResponse.json({ id, ...updatedData, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+          return HttpResponse.json({
+            id,
+            ...updatedData,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
         })
       );
       const updatedData = { title: 'Updated Title', published: true };
       const updatedPost = await updatePost('1', updatedData);
-      expect(updatedPost).toEqual(expect.objectContaining({ id: '1', title: 'Updated Title', published: true }));
+      expect(updatedPost).toEqual(
+        expect.objectContaining({ id: '1', title: 'Updated Title', published: true })
+      );
     });
 
     it('should handle API errors when updating a post', async () => {

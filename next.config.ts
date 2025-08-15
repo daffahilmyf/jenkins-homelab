@@ -1,13 +1,15 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   compiler: {
-    reactRemoveProperties: process.env.NODE_ENV === 'production' ? {
-      properties: ['^data-testid'],
-    } : false,
+    reactRemoveProperties:
+      process.env.NODE_ENV === 'production'
+        ? {
+            properties: ['^data-testid'],
+          }
+        : false,
   },
-  serverExternalPackages: ['pino', 'pino-pretty']
-
+  serverExternalPackages: ['pino', 'pino-pretty'],
 };
 
 export default nextConfig;

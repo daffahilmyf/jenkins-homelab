@@ -50,7 +50,10 @@ describe('GET /api/posts/[id]', () => {
     const request = new Request('http://localhost/api/posts/1');
     const response = await GET(request, { params: { id: '1' } });
 
-    expect(NextResponse.json).toHaveBeenCalledWith({ error: 'Internal Server Error' }, { status: 500 });
+    expect(NextResponse.json).toHaveBeenCalledWith(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
     expect(response.init).toEqual({ status: 500 });
   });
 });
@@ -125,26 +128,25 @@ describe('PUT /api/posts/[id]', () => {
   });
 
   it('should handle server errors when updating a post', async () => {
-  const validUpdate = { title: 'Valid', content: 'Valid', published: true };
+    const validUpdate = { title: 'Valid', content: 'Valid', published: true };
 
-  jest.spyOn(postUpdateSchema, 'parse').mockReturnValue(validUpdate);
-  mockPrisma.post.update.mockRejectedValue(new Error('DB error'));
+    jest.spyOn(postUpdateSchema, 'parse').mockReturnValue(validUpdate);
+    mockPrisma.post.update.mockRejectedValue(new Error('DB error'));
 
-  const request = new Request('http://localhost/api/posts/1', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(validUpdate),
+    const request = new Request('http://localhost/api/posts/1', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(validUpdate),
+    });
+
+    const response = await PUT(request, { params: { id: '1' } });
+
+    expect(NextResponse.json).toHaveBeenCalledWith(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+    expect(response.init).toEqual({ status: 500 });
   });
-
-  const response = await PUT(request, { params: { id: '1' } });
-
-  expect(NextResponse.json).toHaveBeenCalledWith(
-    { error: 'Internal Server Error' },
-    { status: 500 }
-  );
-  expect(response.init).toEqual({ status: 500 });
-});
-
 });
 
 describe('DELETE /api/posts/[id]', () => {

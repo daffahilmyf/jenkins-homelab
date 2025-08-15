@@ -10,11 +10,7 @@ interface PostFormProps {
   isSubmitting: boolean;
 }
 
-const PostForm: React.FC<PostFormProps> = ({
-  initialData,
-  onSubmit,
-  isSubmitting,
-}) => {
+const PostForm: React.FC<PostFormProps> = ({ initialData, onSubmit, isSubmitting }) => {
   const [title, setTitle] = useState(initialData?.title || '');
   const [content, setContent] = useState(initialData?.content || '');
   const [published, setPublished] = useState(initialData?.published || false);
@@ -56,6 +52,7 @@ const PostForm: React.FC<PostFormProps> = ({
         type="text"
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        required
       />
       <div className="mb-6 flex items-center">
         <input

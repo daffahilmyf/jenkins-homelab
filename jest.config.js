@@ -11,9 +11,14 @@ module.exports = {
     '^@/(.*)': '<rootDir>/src/$1',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  collectCoverage: true,
+  coverageDirectory: 'coverage',
   transform: {
-    '^.+\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: '<rootDir>/tsconfig.jest.json',
-    }],
+    '^.+\.(ts|tsx)$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/tsconfig.jest.json',
+      },
+    ],
   },
 };

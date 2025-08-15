@@ -67,7 +67,9 @@ describe('PostForm', () => {
     render(<PostForm onSubmit={mockOnSubmit} isSubmitting={false} />);
 
     fireEvent.change(screen.getByTestId('input-title'), { target: { value: 'Submitted Title' } });
-    fireEvent.change(screen.getByTestId('input-content'), { target: { value: 'Submitted Content' } });
+    fireEvent.change(screen.getByTestId('input-content'), {
+      target: { value: 'Submitted Content' },
+    });
     fireEvent.click(screen.getByTestId('post-form-published-checkbox'));
 
     fireEvent.submit(screen.getByTestId('post-form'));
