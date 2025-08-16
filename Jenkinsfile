@@ -35,7 +35,7 @@ pipeline {
             }
         }
 
-        stage('Lint & Format') {
+        stage('Lint & Format Check') {
             steps {
                 script {
                     docker.image('node:22').inside('-u root:root') {
@@ -147,7 +147,7 @@ pipeline {
     post {
         always {
             echo 'Pipeline finished.'
-            node {
+            node(label: 'docker-agent') {
                 cleanWs()
             }
         }
