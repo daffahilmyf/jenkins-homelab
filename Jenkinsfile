@@ -1,8 +1,8 @@
 pipeline {
     agent {
-        label 'docker-agent'        // Use your Docker-capable agent
         docker {
             image 'node:22'
+            label 'docker-agent'
             args '-u root:root'
             reuseNode true
         }
