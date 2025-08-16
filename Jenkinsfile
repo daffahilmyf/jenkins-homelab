@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    tools {
-        // Make sure to configure a NodeJS installation named 'NodeJS 22' in Jenkins' Global Tool Configuration.
-        nodejs 'NodeJS 22'
-    }
-
     environment {
         CI = 'true'
         DATABASE_URL = "file:./dev.db"
