@@ -1,54 +1,22 @@
 pipeline {
     agent {
         docker {
-            image 'node:22'
-            args '-u root'
+            image 'node:22'  // Use official Node.js 22 image
+            args '-u root'   // Run as root for permissions
         }
     }
 
     environment {
         CI = 'true'
-        DATABASE_URL = "file:./dev.db"
+        DATABASE_URL = "file:./dev.db"  // SQLite used for Prisma
         NEXT_PUBLIC_API_URL = "http://localhost:3000/api"
-        CACHE_DIR = '.npm_cache'
-    }
-
-    options {
-        skipDefaultCheckout(false)
     }
 
     stages {
-        stage('Prepare Cache') {
-            steps {
-                sh '''
-                    mkdir -p $CACHE_DIR
-                    npm config set cache $CACHE_DIR --global
-                '''
-            }
-        }
-
         stage('Install Dependencies') {
             steps {
-                cache(path: '.npm', key: 'npm-cache-${HASH}', restoreKeys: ['npm-cache-']) {
-                    sh '''
-                        if [ ! -d "node_modules" ]; then
-                          echo "Installing npm dependencies..."
-                          npm ci
-                        else
-                          echo "Dependencies already installed."
-                        fi
-                    '''
-                }
-
-                // Install Playwright only if browsers are not installed
-                sh '''
-                    if [ ! -d "playwright-browsers" ]; then
-                      echo "Installing Playwright browsers..."
-                      npx playwright install --with-deps
-                    else
-                      echo "Playwright browsers already installed."
-                    fi
-                '''
+                sh 'npm install'
+                sh 'npx playwright install --with-deps'  // Install Playwright browsers
             }
         }
 
@@ -73,7 +41,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'npm run build'
+                sh 'npm run build'  // Required for E2E tests
             }
         }
 
@@ -86,8 +54,8 @@ pipeline {
 
     post {
         always {
-            echo 'Resetting database...'
-            sh 'npm run db:reset || echo "Database reset failed or unnecessary"'
+            // Reset DB after all tests (clean environment)
+            sh 'npm run db:reset'
         }
     }
 }
