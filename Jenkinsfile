@@ -2,22 +2,20 @@ pipeline {
     agent any
 
     environment {
-        // Use the credential IDs you created in Jenkins
-        DISCORD_WEBHOOK = credentials('discord-webhook-url')
-        GITHUB_TOKEN = credentials('github-personal-access-token')
+        // DISCORD_WEBHOOK = credentials('discord-webhook-url')
+        // GITHUB_TOKEN = credentials('github-personal-access-token')
     }
 
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
-                // Set the initial PR status to pending
-                githubNotify(
-                    context: 'Jenkins CI',
-                    description: 'Build is running...',
-                    status: 'PENDING',
-                    token: env.GITHUB_TOKEN
-                )
+                // githubNotify(
+                //     context: 'Jenkins CI',
+                //     description: 'Build is running...',
+                //     status: 'PENDING',
+                //     token: env.GITHUB_TOKEN
+                // )
             }
         }
 
@@ -112,40 +110,40 @@ pipeline {
             cleanWs()
         }
         success {
-            discordNotifier(
-                webhookUrl: env.DISCORD_WEBHOOK,
-                message: "✅ SUCCESS: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-                status: "SUCCESS",
-                color: 2293546
-            )
-            githubNotify(
-                context: 'Jenkins CI',
-                description: 'Build finished successfully',
-                status: 'SUCCESS',
-                token: env.GITHUB_TOKEN
-            )
+            // discordNotifier(
+            //     webhookUrl: env.DISCORD_WEBHOOK,
+            //     message: "✅ SUCCESS: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+            //     status: "SUCCESS",
+            //     color: 2293546
+            // )
+            // githubNotify(
+            //     context: 'Jenkins CI',
+            //     description: 'Build finished successfully',
+            //     status: 'SUCCESS',
+            //     token: env.GITHUB_TOKEN
+            // )
         }
         failure {
-            discordNotifier(
-                webhookUrl: env.DISCORD_WEBHOOK,
-                message: "❌ FAILURE: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-                status: "FAILURE",
-                color: 15728640
-            )
-            githubNotify(
-                context: 'Jenkins CI',
-                description: 'Build failed',
-                status: 'FAILURE',
-                token: env.GITHUB_TOKEN
-            )
+            // discordNotifier(
+            //     webhookUrl: env.DISCORD_WEBHOOK,
+            //     message: "❌ FAILURE: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+            //     status: "FAILURE",
+            //     color: 15728640
+            // )
+            // githubNotify(
+            //     context: 'Jenkins CI',
+            //     description: 'Build failed',
+            //     status: 'FAILURE',
+            //     token: env.GITHUB_TOKEN
+            // )
         }
         aborted {
-            discordNotifier(
-                webhookUrl: env.DISCORD_WEBHOOK,
-                message: "ABORTED: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-                status: "ABORTED",
-                color: 10066329
-            )
+            // discordNotifier(
+            //     webhookUrl: env.DISCORD_WEBHOOK,
+            //     message: "ABORTED: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+            //     status: "ABORTED",
+            //     color: 10066329
+            // )
         }
     }
 }
