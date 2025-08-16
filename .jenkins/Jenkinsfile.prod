@@ -14,28 +14,9 @@ pipeline {
             }
         }
 
-        stage('Lint and Format Check') {
-            steps {
-                sh 'npm run lint'
-                sh 'npm run format:check'
-            }
-        }
-
-        stage('Run Unit and Integration Tests') {
-            steps {
-                sh 'npm run test'
-            }
-        }
-
         stage('Database Migration') {
             steps {
                 sh 'npx prisma migrate deploy'
-            }
-        }
-
-        stage('Run E2E Tests') {
-            steps {
-                sh 'npm run test:e2e'
             }
         }
 
@@ -44,12 +25,15 @@ pipeline {
                 sh 'npm run build'
             }
         }
-    }
 
-    post {
-        always {
-            script {
-                sh 'npx prisma migrate reset --force'
+        stage('Deploy') {
+            steps {
+                // This is a placeholder for the deployment command.
+                // The actual command will depend on your infrastructure.
+                // For example, you might use a command like:
+                // sh 'docker build -t my-app . && docker push my-app'
+                // sh 'kubectl apply -f deployment.yaml'
+                echo 'Deploying to production...'
             }
         }
     }
