@@ -1,9 +1,8 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:22'
-            args '-u root'
-        }
+    agent { label 'agent' }
+
+    tools {
+        nodejs 'node:22'
     }
 
     environment {
@@ -13,10 +12,34 @@ pipeline {
     }
 
     stages {
+        stage('Restore Cache') {
+            steps {
+                script {
+                    // This will restore node_modules if previously cached
+                    try {
+                        unstash 'node_modules_cache'
+                        echo '✅ Restored node_modules from cache'
+                    } catch (err) {
+                        echo '⚠️ No cache found, fresh install will proceed'
+                    }
+                }
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
                 sh 'npx playwright install --with-deps'
+            }
+        }
+
+        stage('Save Cache') {
+            steps {
+                script {
+                    // Stash node_modules for later stages or reuse
+                    stash includes: 'node_modules/**', name: 'node_modules_cache'
+                    echo '📦 Cached node_modules'
+                }
             }
         }
 
