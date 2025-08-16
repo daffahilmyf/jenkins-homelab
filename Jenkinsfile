@@ -1,6 +1,6 @@
 pipeline {
     // Make sure this label matches a node that has Docker installed
-    agent { label 'docker' }
+    agent { label 'docker-agent' }
 
     options {
         skipDefaultCheckout(true)
