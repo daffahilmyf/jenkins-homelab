@@ -1,21 +1,13 @@
 pipeline {
     agent any
 
-    environment {
-        // DISCORD_WEBHOOK = credentials('discord-webhook-url')
-        // GITHUB_TOKEN = credentials('github-personal-access-token')
-    }
+    // environment {}  // removed since no vars are needed now
 
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
-                // githubNotify(
-                //     context: 'Jenkins CI',
-                //     description: 'Build is running...',
-                //     status: 'PENDING',
-                //     token: env.GITHUB_TOKEN
-                // )
+                // githubNotify(...) // disabled
             }
         }
 
@@ -28,29 +20,35 @@ pipeline {
                     }
                 }
                 stages {
-                    stage('Run Quality Checks') {
+                    stage('Install') {
                         steps {
                             sh "nvm use ${NODE_VERSION} && npm install"
-                            parallel(
-                                "Lint and Format Check": {
+                        }
+                    }
+                    stage('Quality Checks') {
+                        parallel {
+                            stage('Lint and Format Check') {
+                                steps {
                                     sh 'npm run lint'
                                     sh 'npm run format:check'
-                                },
-                                "Unit Tests": {
+                                }
+                            }
+                            stage('Unit Tests') {
+                                steps {
                                     sh 'npm test -- --coverage'
                                 }
-                            )
-                        }
-                        post {
-                            always {
-                                publishHTML(target: [
-                                    allowMissing: false,
-                                    alwaysLinkToLastBuild: true,
-                                    keepAll: true,
-                                    reportDir: 'coverage',
-                                    reportFiles: 'lcov-report/index.html',
-                                    reportName: "Code Coverage - Node ${NODE_VERSION}"
-                                ])
+                                post {
+                                    always {
+                                        publishHTML(target: [
+                                            allowMissing: false,
+                                            alwaysLinkToLastBuild: true,
+                                            keepAll: true,
+                                            reportDir: 'coverage',
+                                            reportFiles: 'lcov-report/index.html',
+                                            reportName: "Code Coverage - Node ${NODE_VERSION}"
+                                        ])
+                                    }
+                                }
                             }
                         }
                     }
@@ -110,40 +108,18 @@ pipeline {
             cleanWs()
         }
         success {
-            // discordNotifier(
-            //     webhookUrl: env.DISCORD_WEBHOOK,
-            //     message: "✅ SUCCESS: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-            //     status: "SUCCESS",
-            //     color: 2293546
-            // )
-            // githubNotify(
-            //     context: 'Jenkins CI',
-            //     description: 'Build finished successfully',
-            //     status: 'SUCCESS',
-            //     token: env.GITHUB_TOKEN
-            // )
+            echo "Build succeeded."
+            // githubNotify(...) // disabled
+            // discordNotifier(...) // disabled
         }
         failure {
-            // discordNotifier(
-            //     webhookUrl: env.DISCORD_WEBHOOK,
-            //     message: "❌ FAILURE: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-            //     status: "FAILURE",
-            //     color: 15728640
-            // )
-            // githubNotify(
-            //     context: 'Jenkins CI',
-            //     description: 'Build failed',
-            //     status: 'FAILURE',
-            //     token: env.GITHUB_TOKEN
-            // )
+            echo "Build failed."
+            // githubNotify(...) // disabled
+            // discordNotifier(...) // disabled
         }
         aborted {
-            // discordNotifier(
-            //     webhookUrl: env.DISCORD_WEBHOOK,
-            //     message: "ABORTED: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
-            //     status: "ABORTED",
-            //     color: 10066329
-            // )
+            echo "Build aborted."
+            // discordNotifier(...) // disabled
         }
     }
 }
