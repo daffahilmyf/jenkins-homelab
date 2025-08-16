@@ -13,8 +13,19 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   collectCoverage: true,
   coverageDirectory: 'coverage',
+  reporters: [
+    'default',
+    [
+      'jest-junit',
+      {
+        outputDirectory: 'reports',
+        outputName: 'junit.xml',
+      },
+    ],
+  ],
   transform: {
-    '^.+\.(ts|tsx)$': [
+    '^.+\.(ts|tsx)
+: [
       'ts-jest',
       {
         tsconfig: '<rootDir>/tsconfig.jest.json',
