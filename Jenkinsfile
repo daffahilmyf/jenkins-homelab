@@ -9,11 +9,11 @@ pipeline {
             agent { label 'docker-agent' }
             steps {
                 sh '''
-                  set -eu
-                  mkdir -p ~/.ssh
-                  chmod 700 ~/.ssh
-                  ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
-                  chmod 644 ~/.ssh/known_hosts
+                    set -eu
+                    mkdir -p ~/.ssh
+                    chmod 700 ~/.ssh
+                    ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+                    chmod 644 ~/.ssh/known_hosts
                 '''
                 checkout scm
                 stash name: 'src', includes: '**/*', excludes: '**/node_modules/**, **/coverage/**'
@@ -167,7 +167,7 @@ pipeline {
     post {
         always {
             echo 'Pipeline finished.'
-            node {
+            node(label: 'docker-agent') {
                 cleanWs()
             }
         }
