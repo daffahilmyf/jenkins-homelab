@@ -1,8 +1,8 @@
 pipeline {
-    agent any
+    // Make sure this label matches a node that has Docker installed
+    agent { label 'docker' }
 
     options {
-        // Prevent Jenkins from doing implicit SCM checkouts on each new node/agent
         skipDefaultCheckout(true)
     }
 
@@ -10,76 +10,76 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-                // Stash the workspace so Dockerized stages don't need to git clone
                 stash name: 'src', includes: '**/*', excludes: '**/node_modules/**, **/coverage/**'
             }
         }
 
-        stage('Build and Test') {
-            matrix {
-                axes {
-                    axis {
-                        name 'NODE_VERSION'
-                        values '20', '22', 'lts'
-                    }
+        stage('Install (Node 22)') {
+            agent {
+                docker {
+                    image 'node:22'
+                    args '-u root:root'
                 }
-                agent {
-                    docker {
-                        image "node:${NODE_VERSION}"
-                        args '-u root:root'
-                    }
-                }
-                stages {
-                    stage('Restore Sources') {
-                        steps {
-                            deleteDir() // ensure clean workspace in the container
-                            unstash 'src'
-                        }
-                    }
-                    stage('Install') {
-                        steps {
-                            sh 'npm ci'
-                        }
-                    }
-                    stage('Lint and Format Check') {
-                        steps {
-                            // Fail on lint errors
-                            sh 'npm run lint'
+            }
+            steps {
+                deleteDir()
+                unstash 'src'
+                sh 'npm ci'
+            }
+        }
 
-                            // Make format check non-fatal: warn if needed but keep going
-                            script {
-                                def rc = sh(returnStatus: true, script: 'npm run format:check')
-                                if (rc != 0) {
-                                    echo '⚠️ Prettier found formatting issues. Consider running: npm run format'
-                                }
-                            }
-                        }
-                    }
-                    stage('Unit Tests') {
-                        steps {
-                            sh 'npm test -- --coverage'
-                        }
-                        post {
-                            always {
-                                publishHTML(target: [
-                                    allowMissing: true,
-                                    alwaysLinkToLastBuild: true,
-                                    keepAll: true,
-                                    reportDir: 'coverage',
-                                    reportFiles: 'lcov-report/index.html',
-                                    reportName: "Code Coverage - Node ${NODE_VERSION}"
-                                ])
-                            }
-                        }
+        stage('Lint & Format Check (Node 22)') {
+            agent {
+                docker {
+                    image 'node:22'
+                    args '-u root:root'
+                }
+            }
+            steps {
+                deleteDir()
+                unstash 'src'
+                sh 'npm ci'
+                sh 'npm run lint'
+                script {
+                    def rc = sh(returnStatus: true, script: 'npm run format:check')
+                    if (rc != 0) {
+                        echo '⚠️ Prettier found formatting issues. Consider running: npm run format'
                     }
                 }
             }
         }
 
-        stage('Build') {
+        stage('Unit Tests (Node 22)') {
             agent {
                 docker {
-                    image 'node:lts'
+                    image 'node:22'
+                    args '-u root:root'
+                }
+            }
+            steps {
+                deleteDir()
+                unstash 'src'
+                sh 'npm ci'
+                sh 'npm test -- --coverage'
+            }
+            post {
+                always {
+                    publishHTML(target: [
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: 'coverage',
+                        reportFiles: 'lcov-report/index.html',
+                        reportName: 'Code Coverage - Node 22'
+                    ])
+                }
+            }
+        }
+
+        stage('Build (Node 22)') {
+            agent {
+                docker {
+                    image 'node:22'
                     args '-u root:root'
                 }
             }
@@ -91,10 +91,10 @@ pipeline {
             }
         }
 
-        stage('E2E Tests') {
+        stage('E2E Tests (Node 22)') {
             agent {
                 docker {
-                    image 'node:lts'
+                    image 'node:22'
                     args '-u root:root'
                 }
             }
@@ -106,10 +106,10 @@ pipeline {
             }
         }
 
-        stage('Security Scan') {
+        stage('Security Scan (Node 22)') {
             agent {
                 docker {
-                    image 'node:lts'
+                    image 'node:22'
                     args '-u root:root'
                 }
             }
@@ -146,8 +146,8 @@ pipeline {
             echo 'Pipeline finished.'
             cleanWs()
         }
-        success { echo "Build succeeded." }
-        failure { echo "Build failed." }
-        aborted { echo "Build aborted." }
+        success { echo 'Build succeeded.' }
+        failure { echo 'Build failed.' }
+        aborted { echo 'Build aborted.' }
     }
 }
