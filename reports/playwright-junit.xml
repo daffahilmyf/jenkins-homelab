@@ -1,0 +1,28 @@
+<testsuites id="" name="" tests="9" failures="0" skipped="1" errors="0" time="11.564785">
+<testsuite name="posts.spec.ts" timestamp="2025-08-16T04:56:34.754Z" hostname="chromium" tests="9" failures="0" skipped="1" time="15.257" errors="0">
+<testcase name="Post Form › Form Submission › should create a published post" classname="posts.spec.ts" time="2.47">
+</testcase>
+<testcase name="Post Form › Form Submission › should create a draft post when published is false" classname="posts.spec.ts" time="2.484">
+</testcase>
+<testcase name="Post Form › Form Submission › should show validation error when title is missing" classname="posts.spec.ts" time="1.69">
+</testcase>
+<testcase name="Post Form › Form Submission › should show validation error when content is missing" classname="posts.spec.ts" time="1.689">
+</testcase>
+<testcase name="Post Form › Form Submission › should prevent double submission" classname="posts.spec.ts" time="0">
+<properties>
+<property name="skip" value="">
+</property>
+</properties>
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Post Form › Form Behavior › should close form when canceled" classname="posts.spec.ts" time="1.639">
+</testcase>
+<testcase name="Post Form › Form Behavior › should reset form fields after submission" classname="posts.spec.ts" time="2.686">
+</testcase>
+<testcase name="Post Form › Form Behavior › should reset form fields after canceling" classname="posts.spec.ts" time="1.981">
+</testcase>
+<testcase name="Post Form › Form Behavior › should show published checkbox unchecked by default" classname="posts.spec.ts" time="0.618">
+</testcase>
+</testsuite>
+</testsuites>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="81" failures="0" errors="0" time="1.749">
+  <testsuite name="PostList component" errors="0" failures="0" skipped="0" timestamp="2025-08-16T04:55:05" time="0.493" tests="12">
+    <testcase classname="PostList component renders heading and posts" name="PostList component renders heading and posts" time="0.027">
+    </testcase>
+    <testcase classname="PostList component shows loading message when isLoading is true" name="PostList component shows loading message when isLoading is true" time="0.002">
+    </testcase>
+    <testcase classname="PostList component shows post form when Create New Post is clicked" name="PostList component shows post form when Create New Post is clicked" time="0.014">
+    </testcase>
+    <testcase classname="PostList component handles post creation" name="PostList component handles post creation" time="0.046">
+    </testcase>
+    <testcase classname="PostList component shows error toast on post creation failure" name="PostList component shows error toast on post creation failure" time="0.033">
+    </testcase>
+    <testcase classname="PostList component handles post update" name="PostList component handles post update" time="0.015">
+    </testcase>
+    <testcase classname="PostList component handles delete flow with confirmation" name="PostList component handles delete flow with confirmation" time="0.012">
+    </testcase>
+    <testcase classname="PostList component shows error toast when delete fails" name="PostList component shows error toast when delete fails" time="0.01">
+    </testcase>
+    <testcase classname="PostList component closes confirmation dialog on cancel" name="PostList component closes confirmation dialog on cancel" time="0.014">
+    </testcase>
+    <testcase classname="PostList component shows message when there are no posts" name="PostList component shows message when there are no posts" time="0.001">
+    </testcase>
+    <testcase classname="PostList component calls setSize when IntersectionObserver triggers" name="PostList component calls setSize when IntersectionObserver triggers" time="0.003">
+    </testcase>
+    <testcase classname="PostList component shows toast on load error from SWR" name="PostList component shows toast on load error from SWR" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="PostForm" errors="0" failures="0" skipped="0" timestamp="2025-08-16T04:55:06" time="0.085" tests="7">
+    <testcase classname="PostForm should render in create mode correctly" name="PostForm should render in create mode correctly" time="0.004">
+    </testcase>
+    <testcase classname="PostForm should render in edit mode with initial data" name="PostForm should render in edit mode with initial data" time="0.002">
+    </testcase>
+    <testcase classname="PostForm should update title and content on user input" name="PostForm should update title and content on user input" time="0.002">
+    </testcase>
+    <testcase classname="PostForm should toggle published status on checkbox click" name="PostForm should toggle published status on checkbox click" time="0.003">
+    </testcase>
+    <testcase classname="PostForm should call onSubmit with correct data on form submission" name="PostForm should call onSubmit with correct data on form submission" time="0.005">
+    </testcase>
+    <testcase classname="PostForm should disable submit button when isSubmitting is true" name="PostForm should disable submit button when isSubmitting is true" time="0.001">
+    </testcase>
+    <testcase classname="PostForm should not call onSubmit if required fields are empty on submission" name="PostForm should not call onSubmit if required fields are empty on submission" time="0.004">
+    </testcase>
+  </testsuite>
+  <testsuite name="ConfirmationDialog" errors="0" failures="0" skipped="0" timestamp="2025-08-16T04:55:06" time="0.065" tests="5">
+    <testcase classname="ConfirmationDialog should not render when isOpen is false" name="ConfirmationDialog should not render when isOpen is false" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmationDialog should render correctly when isOpen is true" name="ConfirmationDialog should render correctly when isOpen is true" time="0.002">
+    </testcase>
+    <testcase classname="ConfirmationDialog should call onConfirm when confirm button is clicked" name="ConfirmationDialog should call onConfirm when confirm button is clicked" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmationDialog should call onCancel when cancel button is clicked" name="ConfirmationDialog should call onCancel when cancel button is clicked" time="0.001">
+    </testcase>
+    <testcase classname="ConfirmationDialog should render custom button texts" name="ConfirmationDialog should render custom button texts" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="API Client Functions" errors="0" failures="0" skipped="0" timestamp="2025-08-16T04:55:06" time="0.104" tests="12">
+    <testcase classname="API Client Functions getPosts should fetch posts successfully" name="API Client Functions getPosts should fetch posts successfully" time="0.016">
+    </testcase>
+    <testcase classname="API Client Functions getPosts should fetch posts with pagination" name="API Client Functions getPosts should fetch posts with pagination" time="0.001">
+    </testcase>
+    <testcase classname="API Client Functions getPosts should handle API errors when fetching posts" name="API Client Functions getPosts should handle API errors when fetching posts" time="0.003">
+    </testcase>
+    <testcase classname="API Client Functions getPosts should handle non-JSON response gracefully" name="API Client Functions getPosts should handle non-JSON response gracefully" time="0.001">
+    </testcase>
+    <testcase classname="API Client Functions getPosts should fallback to status error when no error message in response" name="API Client Functions getPosts should fallback to status error when no error message in response" time="0.001">
+    </testcase>
+    <testcase classname="API Client Functions getPosts should handle &quot;errors&quot; field in error response" name="API Client Functions getPosts should handle &quot;errors&quot; field in error response" time="0.001">
+    </testcase>
+    <testcase classname="API Client Functions createPost should create a new post successfully" name="API Client Functions createPost should create a new post successfully" time="0.002">
+    </testcase>
+    <testcase classname="API Client Functions createPost should handle API errors when creating a post" name="API Client Functions createPost should handle API errors when creating a post" time="0.001">
+    </testcase>
+    <testcase classname="API Client Functions updatePost should update an existing post successfully" name="API Client Functions updatePost should update an existing post successfully" time="0.003">
+    </testcase>
+    <testcase classname="API Client Functions updatePost should handle API errors when updating a post" name="API Client Functions updatePost should handle API errors when updating a post" time="0.001">
+    </testcase>
+    <testcase classname="API Client Functions deletePost should delete a post successfully" name="API Client Functions deletePost should delete a post successfully" time="0.001">
+    </testcase>
+    <testcase classname="API Client Functions deletePost should handle API errors when deleting a post" name="API Client Functions deletePost should handle API errors when deleting a post" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="GET /api/posts/[id]" errors="0" failures="0" skipped="0" timestamp="2025-08-16T04:55:06" time="0.078" tests="8">
+    <testcase classname="GET /api/posts/[id] should return a single post if found" name="GET /api/posts/[id] should return a single post if found" time="0.001">
+    </testcase>
+    <testcase classname="GET /api/posts/[id] should return 404 if post is not found" name="GET /api/posts/[id] should return 404 if post is not found" time="0">
+    </testcase>
+    <testcase classname="GET /api/posts/[id] should handle errors when fetching a single post" name="GET /api/posts/[id] should handle errors when fetching a single post" time="0">
+    </testcase>
+    <testcase classname="PUT /api/posts/[id] should update a post successfully" name="PUT /api/posts/[id] should update a post successfully" time="0.001">
+    </testcase>
+    <testcase classname="PUT /api/posts/[id] should return 400 for invalid input" name="PUT /api/posts/[id] should return 400 for invalid input" time="0.001">
+    </testcase>
+    <testcase classname="PUT /api/posts/[id] should handle server errors when updating a post" name="PUT /api/posts/[id] should handle server errors when updating a post" time="0">
+    </testcase>
+    <testcase classname="DELETE /api/posts/[id] should delete a post successfully" name="DELETE /api/posts/[id] should delete a post successfully" time="0.001">
+    </testcase>
+    <testcase classname="DELETE /api/posts/[id] should handle errors when deleting a post" name="DELETE /api/posts/[id] should handle errors when deleting a post" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="GET /api/posts" errors="0" failures="0" skipped="0" timestamp="2025-08-16T04:55:06" time="0.059" tests="6">
+    <testcase classname="GET /api/posts should return a list of posts with default pagination" name="GET /api/posts should return a list of posts with default pagination" time="0">
+    </testcase>
+    <testcase classname="GET /api/posts should return a list of posts with custom skip and take" name="GET /api/posts should return a list of posts with custom skip and take" time="0.001">
+    </testcase>
+    <testcase classname="GET /api/posts should handle errors when fetching posts" name="GET /api/posts should handle errors when fetching posts" time="0">
+    </testcase>
+    <testcase classname="POST /api/posts should create a new post successfully" name="POST /api/posts should create a new post successfully" time="0.001">
+    </testcase>
+    <testcase classname="POST /api/posts should return 400 for invalid input" name="POST /api/posts should return 400 for invalid input" time="0">
+    </testcase>
+    <testcase classname="POST /api/posts should handle server errors when creating a post" name="POST /api/posts should handle server errors when creating a post" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="postCreateSchema" errors="0" failures="0" skipped="0" timestamp="2025-08-16T04:55:06" time="0.048" tests="13">
+    <testcase classname="postCreateSchema should validate a post with valid title, content, and published status" name="postCreateSchema should validate a post with valid title, content, and published status" time="0.001">
+    </testcase>
+    <testcase classname="postCreateSchema should fail validation if title is missing" name="postCreateSchema should fail validation if title is missing" time="0">
+    </testcase>
+    <testcase classname="postCreateSchema should fail validation if title is empty" name="postCreateSchema should fail validation if title is empty" time="0">
+    </testcase>
+    <testcase classname="postCreateSchema should fail validation if content is missing" name="postCreateSchema should fail validation if content is missing" time="0">
+    </testcase>
+    <testcase classname="postCreateSchema should fail validation if content is empty" name="postCreateSchema should fail validation if content is empty" time="0">
+    </testcase>
+    <testcase classname="postCreateSchema should fail validation if published is missing" name="postCreateSchema should fail validation if published is missing" time="0">
+    </testcase>
+    <testcase classname="postCreateSchema should fail validation if published is not a boolean" name="postCreateSchema should fail validation if published is not a boolean" time="0">
+    </testcase>
+    <testcase classname="postUpdateSchema should validate a post with valid title and content" name="postUpdateSchema should validate a post with valid title and content" time="0">
+    </testcase>
+    <testcase classname="postUpdateSchema should validate a post with only title" name="postUpdateSchema should validate a post with only title" time="0">
+    </testcase>
+    <testcase classname="postUpdateSchema should validate a post with only content" name="postUpdateSchema should validate a post with only content" time="0">
+    </testcase>
+    <testcase classname="postUpdateSchema should validate a post with only published status" name="postUpdateSchema should validate a post with only published status" time="0.001">
+    </testcase>
+    <testcase classname="postUpdateSchema should fail validation if title is empty when provided" name="postUpdateSchema should fail validation if title is empty when provided" time="0">
+    </testcase>
+    <testcase classname="postUpdateSchema should fail validation if content is empty when provided" name="postUpdateSchema should fail validation if content is empty when provided" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="PostCard" errors="0" failures="0" skipped="0" timestamp="2025-08-16T04:55:06" time="0.066" tests="4">
+    <testcase classname="PostCard should render post details correctly" name="PostCard should render post details correctly" time="0.004">
+    </testcase>
+    <testcase classname="PostCard should render draft status correctly" name="PostCard should render draft status correctly" time="0.002">
+    </testcase>
+    <testcase classname="PostCard should call onEdit with post id when Edit button is clicked" name="PostCard should call onEdit with post id when Edit button is clicked" time="0.001">
+    </testcase>
+    <testcase classname="PostCard should call onDelete with post id when Delete button is clicked" name="PostCard should call onDelete with post id when Delete button is clicked" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Button" errors="0" failures="0" skipped="0" timestamp="2025-08-16T04:55:07" time="0.082" tests="5">
+    <testcase classname="Button should render with default primary variant" name="Button should render with default primary variant" time="0.011">
+    </testcase>
+    <testcase classname="Button should render with secondary variant" name="Button should render with secondary variant" time="0.002">
+    </testcase>
+    <testcase classname="Button should render with danger variant" name="Button should render with danger variant" time="0.003">
+    </testcase>
+    <testcase classname="Button should call onClick handler when clicked" name="Button should call onClick handler when clicked" time="0.003">
+    </testcase>
+    <testcase classname="Button should pass through additional props" name="Button should pass through additional props" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Input" errors="0" failures="0" skipped="0" timestamp="2025-08-16T04:55:07" time="0.064" tests="4">
+    <testcase classname="Input should render input with a label" name="Input should render input with a label" time="0.005">
+    </testcase>
+    <testcase classname="Input should render input without a label" name="Input should render input without a label" time="0.001">
+    </testcase>
+    <testcase classname="Input should call onChange handler when input value changes" name="Input should call onChange handler when input value changes" time="0">
+    </testcase>
+    <testcase classname="Input should pass through additional props" name="Input should pass through additional props" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="logger module" errors="0" failures="0" skipped="0" timestamp="2025-08-16T04:55:07" time="0.045" tests="2">
+    <testcase classname="logger module should use pretty transport when NODE_ENV is development" name="logger module should use pretty transport when NODE_ENV is development" time="0.005">
+    </testcase>
+    <testcase classname="logger module should use JSON transport when NODE_ENV is not development" name="logger module should use JSON transport when NODE_ENV is not development" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Prisma Singleton" errors="0" failures="0" skipped="0" timestamp="2025-08-16T04:55:07" time="0.046" tests="3">
+    <testcase classname="Prisma Singleton should create a new PrismaClient instance if none exists" name="Prisma Singleton should create a new PrismaClient instance if none exists" time="0.001">
+    </testcase>
+    <testcase classname="Prisma Singleton should reuse existing PrismaClient instance if already defined" name="Prisma Singleton should reuse existing PrismaClient instance if already defined" time="0">
+    </testcase>
+    <testcase classname="Prisma Singleton should not assign global prisma in production" name="Prisma Singleton should not assign global prisma in production" time="0.001">
+    </testcase>
+  </testsuite>
+</testsuites>

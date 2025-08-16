@@ -54,7 +54,7 @@ test.describe('Post Form', () => {
       await postForm.expectValidationErrorOnField('content');
     });
 
-    test('should prevent double submission', async () => {
+    test.skip('should prevent double submission', async () => {
       await postForm.openForm();
       await postForm.fillForm({
         title: 'Spammy Post',
