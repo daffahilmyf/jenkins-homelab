@@ -1,27 +1,49 @@
 pipeline {
     agent {
         docker {
-            image 'node:22'  // Use official Node.js 22 image
-            args '-u root'   // Run as root for permissions
+            image 'node:22'
+            args '-u root'
         }
     }
 
     environment {
         CI = 'true'
-        DATABASE_URL = "file:./dev.db"  // SQLite used for Prisma
+        DATABASE_URL = "file:./dev.db"
         NEXT_PUBLIC_API_URL = "http://localhost:3000/api"
+        CACHE_DIR = "${WORKSPACE}/.cache"
     }
 
     options {
-        // Cache node_modules to speed up subsequent builds
-        cache(path: 'node_modules', key: "npm-${hashFiles('package-lock.json')}")
+        timestamps()
+        timeout(time: 20, unit: 'MINUTES')
     }
 
     stages {
+        stage('Restore Cache') {
+            steps {
+                script {
+                    if (fileExists("${CACHE_DIR}/node_modules")) {
+                        echo 'Restoring node_modules from cache...'
+                        sh 'cp -R ${CACHE_DIR}/node_modules ./'
+                    } else {
+                        echo 'No cache found. node_modules will be installed fresh.'
+                    }
+                }
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
                 sh 'npx playwright install --with-deps'
+
+                script {
+                    echo 'Saving node_modules to cache...'
+                    sh '''
+                        mkdir -p ${CACHE_DIR}
+                        cp -R node_modules ${CACHE_DIR}/
+                    '''
+                }
             }
         }
 
@@ -54,22 +76,20 @@ pipeline {
 
         stage('Database Migration') {
             steps {
-                // This step ensures the migrations are valid.
                 sh 'npm run db:migrate:deploy'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'npm run build'  // Required for E2E tests
+                sh 'npm run build'
             }
         }
     }
 
     post {
         always {
-            // Reset DB after all tests (clean environment)
-            // This command will drop the database and re-run all migrations.
+            echo 'Cleaning up...'
             sh 'npm run db:reset'
         }
     }
