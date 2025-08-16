@@ -1,14 +1,14 @@
 pipeline {
     agent {
         docker {
-            image 'node:22' // Official Node.js 22 Docker image
-            args '-u root'  // Optional: run as root for install permissions
+            image 'node:22'  // Use official Node.js 22 image
+            args '-u root'   // Run as root for permissions
         }
     }
 
     environment {
         CI = 'true'
-        DATABASE_URL = "file:./dev.db"
+        DATABASE_URL = "file:./dev.db"  // SQLite used for Prisma
         NEXT_PUBLIC_API_URL = "http://localhost:3000/api"
     }
 
@@ -16,6 +16,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
+                sh 'npx playwright install --with-deps'  // Install Playwright browsers
             }
         }
 
@@ -34,7 +35,13 @@ pipeline {
 
         stage('Database Migration') {
             steps {
-                sh 'npx prisma migrate deploy'
+                sh 'npm run db:migrate:deploy'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'npm run build'  // Required for E2E tests
             }
         }
 
@@ -43,19 +50,12 @@ pipeline {
                 sh 'npm run test:e2e'
             }
         }
-
-        stage('Build') {
-            steps {
-                sh 'npm run build'
-            }
-        }
     }
 
     post {
         always {
-            script {
-                sh 'npx prisma migrate reset --force'
-            }
+            // Reset DB after all tests (clean environment)
+            sh 'npm run db:reset'
         }
     }
 }
