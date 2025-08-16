@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage("Install & Cache Dependencies") {
             steps {
-                cache(maxCacheSize: 512, defaultBranch: 'main', caches: [
+                cache(maxCacheSize: 2048, defaultBranch: 'main', caches: [
                     arbitraryFileCache(
                         path: "node_modules",
                         cacheValidityDecidingFile: "package-lock.json"
