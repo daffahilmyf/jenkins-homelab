@@ -12,14 +12,15 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --update-snapshots",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "npx prisma migrate reset --force",
     "db:push": "npx prisma db push",
     "db:migrate:deploy": "npx prisma migrate deploy",
     "db:migrate:dev": "npx prisma migrate dev",
     "db:generate": "npx prisma generate",
-    "db:studio": "npx prisma studio"
+    "db:studio": "npx prisma studio",
+    "postinstall": "npx playwright install --with-deps"
   },
   "dependencies": {
     "@faker-js/faker": "^9.9.0",

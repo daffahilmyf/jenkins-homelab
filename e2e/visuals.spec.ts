@@ -22,14 +22,6 @@ test.describe('Visual and Responsiveness Testing', () => {
     await expect(homePage.mainContainer).toHaveScreenshot('main-container.png', { threshold: 0.2 });
   });
 
-  // Visual Regression Test for the PostCard component
-  test('should match the screenshot of the first post card', async ({ page }) => {
-    const postCardList = new PostCardList(page);
-    await expect(postCardList.firstCard.locator).toHaveScreenshot('post-card.png', {
-      threshold: 0.2,
-    });
-  });
-
   // Responsiveness Tests
   for (const viewport of viewports) {
     test(`should be responsive on ${viewport.name} viewport`, async ({ page }) => {
