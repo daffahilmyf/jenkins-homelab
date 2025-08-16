@@ -1,12 +1,19 @@
 pipeline {
-    agent none
+    agent {
+        label 'docker-agent'        // Use your Docker-capable agent
+        docker {
+            image 'node:22'
+            args '-u root:root'
+            reuseNode true
+        }
+    }
+
     options {
         skipDefaultCheckout(true)
     }
 
     stages {
         stage('Checkout') {
-            agent { label 'docker-agent' }
             steps {
                 sh '''
                     set -eu
@@ -20,14 +27,7 @@ pipeline {
             }
         }
 
-        stage('Install (Node 22)') {
-            agent {
-                docker {
-                    image 'node:22'
-                    args '-u root:root'
-                    reuseNode true
-                }
-            }
+        stage('Install') {
             steps {
                 deleteDir()
                 unstash 'src'
@@ -35,14 +35,7 @@ pipeline {
             }
         }
 
-        stage('Lint & Format Check (Node 22)') {
-            agent {
-                docker {
-                    image 'node:22'
-                    args '-u root:root'
-                    reuseNode true
-                }
-            }
+        stage('Lint & Format Check') {
             steps {
                 deleteDir()
                 unstash 'src'
@@ -57,14 +50,7 @@ pipeline {
             }
         }
 
-        stage('Unit Tests (Node 22)') {
-            agent {
-                docker {
-                    image 'node:22'
-                    args '-u root:root'
-                    reuseNode true
-                }
-            }
+        stage('Unit Tests') {
             steps {
                 deleteDir()
                 unstash 'src'
@@ -79,20 +65,13 @@ pipeline {
                         keepAll: true,
                         reportDir: 'coverage',
                         reportFiles: 'lcov-report/index.html',
-                        reportName: 'Code Coverage - Node 22'
+                        reportName: 'Code Coverage'
                     ])
                 }
             }
         }
 
-        stage('Build (Node 22)') {
-            agent {
-                docker {
-                    image 'node:22'
-                    args '-u root:root'
-                    reuseNode true
-                }
-            }
+        stage('Build') {
             steps {
                 deleteDir()
                 unstash 'src'
@@ -101,14 +80,7 @@ pipeline {
             }
         }
 
-        stage('E2E Tests (Node 22)') {
-            agent {
-                docker {
-                    image 'node:22'
-                    args '-u root:root'
-                    reuseNode true
-                }
-            }
+        stage('E2E Tests') {
             steps {
                 deleteDir()
                 unstash 'src'
@@ -117,14 +89,7 @@ pipeline {
             }
         }
 
-        stage('Security Scan (Node 22)') {
-            agent {
-                docker {
-                    image 'node:22'
-                    args '-u root:root'
-                    reuseNode true
-                }
-            }
+        stage('Security Scan') {
             steps {
                 deleteDir()
                 unstash 'src'
@@ -143,21 +108,18 @@ pipeline {
         }
 
         stage('Backup Database') {
-            agent { label 'docker-agent' }
             steps {
                 echo '📦 Backing up the database...'
             }
         }
 
         stage('Deploy') {
-            agent { label 'docker-agent' }
             steps {
                 echo '🚀 Deploying...'
             }
         }
 
         stage('Migrate Database') {
-            agent { label 'docker-agent' }
             steps {
                 echo '📂 Running database migrations...'
             }
@@ -167,9 +129,7 @@ pipeline {
     post {
         always {
             echo 'Pipeline finished.'
-            node(label: 'docker-agent') {
-                cleanWs()
-            }
+            cleanWs()
         }
         success {
             echo '✅ Build succeeded.'
