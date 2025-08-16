@@ -1,8 +1,6 @@
 pipeline {
     agent any
 
-    // environment {}  // removed since no vars are needed now
-
     stages {
         stage('Checkout') {
             steps {
@@ -25,30 +23,26 @@ pipeline {
                             sh "nvm use ${NODE_VERSION} && npm install"
                         }
                     }
-                    stage('Quality Checks') {
-                        parallel {
-                            stage('Lint and Format Check') {
-                                steps {
-                                    sh 'npm run lint'
-                                    sh 'npm run format:check'
-                                }
-                            }
-                            stage('Unit Tests') {
-                                steps {
-                                    sh 'npm test -- --coverage'
-                                }
-                                post {
-                                    always {
-                                        publishHTML(target: [
-                                            allowMissing: false,
-                                            alwaysLinkToLastBuild: true,
-                                            keepAll: true,
-                                            reportDir: 'coverage',
-                                            reportFiles: 'lcov-report/index.html',
-                                            reportName: "Code Coverage - Node ${NODE_VERSION}"
-                                        ])
-                                    }
-                                }
+                    stage('Lint and Format Check') {
+                        steps {
+                            sh "nvm use ${NODE_VERSION} && npm run lint"
+                            sh "nvm use ${NODE_VERSION} && npm run format:check"
+                        }
+                    }
+                    stage('Unit Tests') {
+                        steps {
+                            sh "nvm use ${NODE_VERSION} && npm test -- --coverage"
+                        }
+                        post {
+                            always {
+                                publishHTML(target: [
+                                    allowMissing: false,
+                                    alwaysLinkToLastBuild: true,
+                                    keepAll: true,
+                                    reportDir: 'coverage',
+                                    reportFiles: 'lcov-report/index.html',
+                                    reportName: "Code Coverage - Node ${NODE_VERSION}"
+                                ])
                             }
                         }
                     }
