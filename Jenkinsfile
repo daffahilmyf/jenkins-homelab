@@ -1,12 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'node:22'
-            label 'docker-agent'
-            args '-u root:root'
-            reuseNode true
-        }
-    }
+    agent { label 'docker-agent' }
 
     options {
         skipDefaultCheckout(true)
@@ -15,36 +8,45 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                sh '''
-                    set -eu
-                    mkdir -p ~/.ssh
-                    chmod 700 ~/.ssh
-                    ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
-                    chmod 644 ~/.ssh/known_hosts
-                '''
-                checkout scm
-                stash name: 'src', includes: '**/*', excludes: '**/node_modules/**, **/coverage/**'
+                script {
+                    docker.image('node:22').inside('-u root:root') {
+                        sh '''
+                            mkdir -p ~/.ssh
+                            chmod 700 ~/.ssh
+                            ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+                            chmod 644 ~/.ssh/known_hosts
+                        '''
+                        checkout scm
+                        stash name: 'src', includes: '**/*', excludes: '**/node_modules/**, **/coverage/**'
+                    }
+                }
             }
         }
 
         stage('Install') {
             steps {
-                deleteDir()
-                unstash 'src'
-                sh 'npm ci'
+                script {
+                    docker.image('node:22').inside('-u root:root') {
+                        deleteDir()
+                        unstash 'src'
+                        sh 'npm ci'
+                    }
+                }
             }
         }
 
-        stage('Lint & Format Check') {
+        stage('Lint & Format') {
             steps {
-                deleteDir()
-                unstash 'src'
-                sh 'npm ci'
-                sh 'npm run lint'
                 script {
-                    def rc = sh(returnStatus: true, script: 'npm run format:check')
-                    if (rc != 0) {
-                        echo '⚠️ Prettier found formatting issues. Consider running: npm run format'
+                    docker.image('node:22').inside('-u root:root') {
+                        deleteDir()
+                        unstash 'src'
+                        sh 'npm ci'
+                        sh 'npm run lint'
+                        def rc = sh(returnStatus: true, script: 'npm run format:check')
+                        if (rc != 0) {
+                            echo '⚠️ Prettier found formatting issues. Consider running: npm run format'
+                        }
                     }
                 }
             }
@@ -52,10 +54,14 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                deleteDir()
-                unstash 'src'
-                sh 'npm ci'
-                sh 'npm test -- --coverage'
+                script {
+                    docker.image('node:22').inside('-u root:root') {
+                        deleteDir()
+                        unstash 'src'
+                        sh 'npm ci'
+                        sh 'npm test -- --coverage'
+                    }
+                }
             }
             post {
                 always {
@@ -73,28 +79,40 @@ pipeline {
 
         stage('Build') {
             steps {
-                deleteDir()
-                unstash 'src'
-                sh 'npm ci'
-                sh 'npm run build'
+                script {
+                    docker.image('node:22').inside('-u root:root') {
+                        deleteDir()
+                        unstash 'src'
+                        sh 'npm ci'
+                        sh 'npm run build'
+                    }
+                }
             }
         }
 
         stage('E2E Tests') {
             steps {
-                deleteDir()
-                unstash 'src'
-                sh 'npm ci'
-                sh 'npm run test:e2e'
+                script {
+                    docker.image('node:22').inside('-u root:root') {
+                        deleteDir()
+                        unstash 'src'
+                        sh 'npm ci'
+                        sh 'npm run test:e2e'
+                    }
+                }
             }
         }
 
         stage('Security Scan') {
             steps {
-                deleteDir()
-                unstash 'src'
-                sh 'npm ci --omit=dev'
-                sh 'npm audit --production'
+                script {
+                    docker.image('node:22').inside('-u root:root') {
+                        deleteDir()
+                        unstash 'src'
+                        sh 'npm ci --omit=dev'
+                        sh 'npm audit --production'
+                    }
+                }
             }
         }
 
@@ -129,7 +147,9 @@ pipeline {
     post {
         always {
             echo 'Pipeline finished.'
-            cleanWs()
+            node {
+                cleanWs()
+            }
         }
         success {
             echo '✅ Build succeeded.'
