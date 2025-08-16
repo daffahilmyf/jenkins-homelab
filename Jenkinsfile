@@ -11,14 +11,19 @@ pipeline {
         NEXT_PUBLIC_API_URL = "http://localhost:3000/api"
     }
 
+    options {
+        // ✅ Correct way to use Job Cacher plugin
+        caches([
+            cache(path: 'node_modules', key: 'node-modules-cache')
+        ])
+    }
+
     stages {
         stage('Install Dependencies') {
             steps {
-                cache(maxCacheSize: 2, key: 'node-modules-cache', paths: ['node_modules']) {
-                    echo '📦 Installing dependencies with cache'
-                    sh 'npm install'
-                    sh 'npx playwright install --with-deps'
-                }
+                echo '📦 Installing dependencies'
+                sh 'npm install'
+                sh 'npx playwright install --with-deps'
             }
         }
 
