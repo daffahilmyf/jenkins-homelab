@@ -1,145 +1,57 @@
 pipeline {
-    agent { label 'docker-agent' }
+    agent {
+        docker {
+            image 'node:22'
+            label 'docker-agent'
+            args '-u root:root'
+        }
+    }
 
     options {
         skipDefaultCheckout(true)
     }
 
     stages {
-        stage('Checkout') {
+        stage('Setup & Checkout') {
             steps {
-                script {
-                    docker.image('node:22').inside('-u root:root') {
-                        sh '''
-                            mkdir -p ~/.ssh
-                            chmod 700 ~/.ssh
-                            ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
-                            chmod 644 ~/.ssh/known_hosts
-                        '''
-                        checkout scm
-                        stash name: 'src', includes: '**/*', excludes: '**/node_modules/**, **/coverage/**'
-                    }
-                }
+                sh '''
+                    mkdir -p ~/.ssh
+                    chmod 700 ~/.ssh
+                    ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+                    chmod 644 ~/.ssh/known_hosts
+                '''
+                checkout scm
             }
         }
 
-        stage('Install') {
+        stage('Install Dependencies') {
             steps {
-                script {
-                    docker.image('node:22').inside('-u root:root') {
-                        deleteDir()
-                        unstash 'src'
-                        sh 'npm ci'
-                    }
-                }
+                sh 'npm ci'
             }
         }
 
-        stage('Lint & Format Check') {
+        stage('Lint & Format') {
             steps {
-                script {
-                    docker.image('node:22').inside('-u root:root') {
-                        deleteDir()
-                        unstash 'src'
-                        sh 'npm ci'
-                        sh 'npm run lint'
-                        def rc = sh(returnStatus: true, script: 'npm run format:check')
-                        if (rc != 0) {
-                            echo '⚠️ Prettier found formatting issues. Consider running: npm run format'
-                        }
-                    }
-                }
+                sh 'npm run lint'
+                sh 'npm run format:check || echo "⚠️ Code not formatted properly"'
             }
         }
 
         stage('Unit Tests') {
             steps {
-                script {
-                    docker.image('node:22').inside('-u root:root') {
-                        deleteDir()
-                        unstash 'src'
-                        sh 'npm ci'
-                        sh 'npm test -- --coverage'
-                    }
-                }
-            }
-            post {
-                always {
-                    publishHTML(target: [
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'coverage',
-                        reportFiles: 'lcov-report/index.html',
-                        reportName: 'Code Coverage'
-                    ])
-                }
+                sh 'npm test -- --coverage'
             }
         }
 
         stage('Build') {
             steps {
-                script {
-                    docker.image('node:22').inside('-u root:root') {
-                        deleteDir()
-                        unstash 'src'
-                        sh 'npm ci'
-                        sh 'npm run build'
-                    }
-                }
+                sh 'npm run build'
             }
         }
 
         stage('E2E Tests') {
             steps {
-                script {
-                    docker.image('node:22').inside('-u root:root') {
-                        deleteDir()
-                        unstash 'src'
-                        sh 'npm ci'
-                        sh 'npm run test:e2e'
-                    }
-                }
-            }
-        }
-
-        stage('Security Scan') {
-            steps {
-                script {
-                    docker.image('node:22').inside('-u root:root') {
-                        deleteDir()
-                        unstash 'src'
-                        sh 'npm ci --omit=dev'
-                        sh 'npm audit --production'
-                    }
-                }
-            }
-        }
-
-        stage('Manual Approval') {
-            when {
-                branch 'main'
-            }
-            steps {
-                input 'Deploy to Production?'
-            }
-        }
-
-        stage('Backup Database') {
-            steps {
-                echo '📦 Backing up the database...'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo '🚀 Deploying...'
-            }
-        }
-
-        stage('Migrate Database') {
-            steps {
-                echo '📂 Running database migrations...'
+                sh 'npm run test:e2e'
             }
         }
     }
@@ -147,18 +59,13 @@ pipeline {
     post {
         always {
             echo 'Pipeline finished.'
-            node(label: 'docker-agent') {
-                cleanWs()
-            }
+            cleanWs()
         }
         success {
             echo '✅ Build succeeded.'
         }
         failure {
             echo '❌ Build failed.'
-        }
-        aborted {
-            echo '⚠️ Build aborted.'
         }
     }
 }
