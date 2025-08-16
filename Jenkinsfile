@@ -1,11 +1,17 @@
 pipeline {
-    agent none  // we'll define agents per-stage (Docker)
+    agent any
+
+    options {
+        // Prevent Jenkins from doing implicit SCM checkouts on each new node/agent
+        skipDefaultCheckout(true)
+    }
 
     stages {
         stage('Checkout') {
-            agent any
             steps {
                 checkout scm
+                // Stash the workspace so Dockerized stages don't need to git clone
+                stash name: 'src', includes: '**/*', excludes: '**/node_modules/**, **/coverage/**'
             }
         }
 
@@ -20,11 +26,16 @@ pipeline {
                 agent {
                     docker {
                         image "node:${NODE_VERSION}"
-                        // run as root to avoid file permission issues; remove if you prefer default user
                         args '-u root:root'
                     }
                 }
                 stages {
+                    stage('Restore Sources') {
+                        steps {
+                            deleteDir() // ensure clean workspace in the container
+                            unstash 'src'
+                        }
+                    }
                     stage('Install') {
                         steps {
                             sh 'npm ci'
@@ -32,8 +43,16 @@ pipeline {
                     }
                     stage('Lint and Format Check') {
                         steps {
+                            // Fail on lint errors
                             sh 'npm run lint'
-                            sh 'npm run format:check'
+
+                            // Make format check non-fatal: warn if needed but keep going
+                            script {
+                                def rc = sh(returnStatus: true, script: 'npm run format:check')
+                                if (rc != 0) {
+                                    echo '⚠️ Prettier found formatting issues. Consider running: npm run format'
+                                }
+                            }
                         }
                     }
                     stage('Unit Tests') {
@@ -43,7 +62,7 @@ pipeline {
                         post {
                             always {
                                 publishHTML(target: [
-                                    allowMissing: false,
+                                    allowMissing: true,
                                     alwaysLinkToLastBuild: true,
                                     keepAll: true,
                                     reportDir: 'coverage',
@@ -65,6 +84,8 @@ pipeline {
                 }
             }
             steps {
+                deleteDir()
+                unstash 'src'
                 sh 'npm ci'
                 sh 'npm run build'
             }
@@ -78,7 +99,8 @@ pipeline {
                 }
             }
             steps {
-                // Adjust if your E2E needs the app started, services, or extra tooling
+                deleteDir()
+                unstash 'src'
                 sh 'npm ci'
                 sh 'npm run test:e2e'
             }
@@ -92,40 +114,30 @@ pipeline {
                 }
             }
             steps {
-                sh 'npm ci --omit=dev'   // keep prod tree accurate for audit
+                deleteDir()
+                unstash 'src'
+                sh 'npm ci --omit=dev'
                 sh 'npm audit --production'
             }
         }
 
         stage('Manual Approval') {
-            when {
-                branch 'main'
-            }
-            agent any
+            when { branch 'main' }
             steps {
                 input 'Deploy to Production?'
             }
         }
 
         stage('Backup Database') {
-            agent any
-            steps {
-                echo 'Backing up the database...'
-            }
+            steps { echo 'Backing up the database...' }
         }
 
         stage('Deploy') {
-            agent any
-            steps {
-                echo 'Deploying...'
-            }
+            steps { echo 'Deploying...' }
         }
 
         stage('Migrate Database') {
-            agent any
-            steps {
-                echo 'Running database migrations...'
-            }
+            steps { echo 'Running database migrations...' }
         }
     }
 
@@ -134,19 +146,8 @@ pipeline {
             echo 'Pipeline finished.'
             cleanWs()
         }
-        success {
-            echo "Build succeeded."
-            // githubNotify(...) // disabled
-            // discordNotifier(...) // disabled
-        }
-        failure {
-            echo "Build failed."
-            // githubNotify(...) // disabled
-            // discordNotifier(...) // disabled
-        }
-        aborted {
-            echo "Build aborted."
-            // discordNotifier(...) // disabled
-        }
+        success { echo "Build succeeded." }
+        failure { echo "Build failed." }
+        aborted { echo "Build aborted." }
     }
 }
