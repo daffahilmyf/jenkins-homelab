@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:22' // Official Node.js 22 Docker image
+            args '-u root'  // Optional: run as root for install permissions
+        }
+    }
 
     environment {
         CI = 'true'
