@@ -5,7 +5,7 @@ pipeline {
     }
 
     stages {
-        stage('Setup Git Host Keys') {
+        stage('Checkout') {
             agent { label 'docker-agent' }
             steps {
                 sh '''
@@ -15,12 +15,6 @@ pipeline {
                   ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
                   chmod 644 ~/.ssh/known_hosts
                 '''
-            }
-        }
-
-        stage('Checkout') {
-            agent { label 'docker-agent' }
-            steps {
                 checkout scm
                 stash name: 'src', includes: '**/*', excludes: '**/node_modules/**, **/coverage/**'
             }
@@ -173,7 +167,9 @@ pipeline {
     post {
         always {
             echo 'Pipeline finished.'
-            cleanWs()
+            node {
+                cleanWs()
+            }
         }
         success {
             echo '✅ Build succeeded.'
